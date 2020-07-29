@@ -1,7 +1,7 @@
 import taichi as ti
 import numpy as np
 
-ti.init(arch=ti.cpu)
+ti.init(arch=ti.gpu)
 b=ti.Vector(3,dt=ti.f32,shape=4)#4个3d的张量
 # b[3]=[1,2,3]是错误的，创建后就不可以更改
 a = ti.Matrix([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
