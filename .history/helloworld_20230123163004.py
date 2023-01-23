@@ -32,8 +32,7 @@ class rect:
         self.rect_height=rect_height
         self.i_hat=i_hat
         self.color=color
-
-
+        
 def main():
     obj=rect(ti.Vector([0.,10.,10.2]),LEFT,wall_distance,canvas_height,FRONT,ti.Vector([0.0, 0.6, 0.0]))
     

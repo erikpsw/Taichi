@@ -23,7 +23,7 @@ wall_distance=3*u#后壁的距离
 light_width=u
 max_depth=1
 
-@ti.data_oriented
+
 class rect:
     def __init__(self,rect_pos,rect_normal,rect_width,rect_height,i_hat,color):
         self.rect_pos=rect_pos
@@ -32,9 +32,9 @@ class rect:
         self.rect_height=rect_height
         self.i_hat=i_hat
         self.color=color
-
-
+        
+@ti.kernel
 def main():
-    obj=rect(ti.Vector([0.,10.,10.2]),LEFT,wall_distance,canvas_height,FRONT,ti.Vector([0.0, 0.6, 0.0]))
+    obj=rect(1,1,wall_distance,canvas_height,1,1)
     
 main()

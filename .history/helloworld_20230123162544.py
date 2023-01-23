@@ -22,9 +22,9 @@ canvas=ti.Vector.field(3, dtype=ti.f32, shape=(canvas_width, canvas_height))#三
 wall_distance=3*u#后壁的距离
 light_width=u
 max_depth=1
-
 @ti.data_oriented
 class rect:
+    @ti.func
     def __init__(self,rect_pos,rect_normal,rect_width,rect_height,i_hat,color):
         self.rect_pos=rect_pos
         self.rect_normal=rect_normal
@@ -32,8 +32,9 @@ class rect:
         self.rect_height=rect_height
         self.i_hat=i_hat
         self.color=color
-
-
+        self.hit_point=ti.Vector([0.,0.,0.])
+        
+@ti.kernel
 def main():
     obj=rect(ti.Vector([0.,10.,10.2]),LEFT,wall_distance,canvas_height,FRONT,ti.Vector([0.0, 0.6, 0.0]))
     
