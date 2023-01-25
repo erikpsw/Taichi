@@ -2,6 +2,8 @@ import taichi as ti
 import numpy as np
 
 ti.init(arch=ti.gpu)
+
+ZERO=ti.Vector([1.,1.,1.])
 INF=100.
 LEFT=ti.Vector([1.,0.,0.])
 RIGHT=ti.Vector([-1.,0.,0.])
@@ -12,7 +14,7 @@ BACK=ti.Vector([0.,0.,1.])
 EPS=0.1
 fov=np.pi/3
 u=200#一个单位所对应的像素值
-camera_distance=5.1*u#相机距离
+camera_distance=5*u#相机距离
 canvas_ratio=1#高宽比
 canvas_height=round(camera_distance*np.tan(fov/2))
 canvas_width=canvas_height*canvas_ratio
@@ -20,12 +22,12 @@ camera_pos=ti.Vector([canvas_width/2,canvas_height/2,-camera_distance],ti.f32)
 canvas=ti.Vector.field(3, dtype=ti.f32, shape=(canvas_width, canvas_height))#三通道的画布
 wall_distance=3*u#后壁的距离
 light_width=u
-max_depth=5
-sample_per_pixel=5
-proportion=0.2
-p_RR = 0.8#轮盘赌概率
-p=0.8
-brightness=0.5
+max_depth=6
+sample_per_pixel=8
+proportion=0.8
+a=2
+p_RR = 0.7#轮盘赌概率
+brightness=1.5
 light_pos=ti.Vector([canvas_width/2,canvas_height+1,wall_distance/2])
 
 
@@ -80,8 +82,8 @@ class rect:
     def get_hit_info(self,start_pos,ray_dir):
         temp=plane_hit_point(start_pos,ray_dir,self.rect_pos,self.rect_normal)
         t=INF
-        point_pos=ti.Vector([0.,0.,0.])
-        j_hat=ti.Vector([0.,0.,0.])
+        point_pos=ZERO
+        j_hat=ZERO
         
         if(temp>0):#此时不一定相交
             point_pos=start_pos+temp*ray_dir
@@ -97,6 +99,8 @@ class rect:
     def hit_cos(self,ray_dir,j_hat):#获取视线的颜色
         cos=ti.math.dot(ray_dir,self.rect_normal)/(ray_dir.norm())
         return ti.abs(cos)#视角要乘上cos
+    
+    
     
     @ti.func
     def get_reflect_info(self,j_hat,ray_dir):
@@ -116,20 +120,14 @@ class rect:
         y=ti.sin(phi)*ti.sin(theta)
         z=ti.cos(theta)
         return(x*self.i_hat+y*j_hat+z*self.rect_normal)
-    
-    @ti.func
-    def light_cos(self,light_dir,j_hat):#获取视线的颜色
-        cos=ti.math.dot(light_dir,self.rect_normal)/(light_dir.norm())
-        return ti.abs(cos)#视角要乘上cos
 
 @ti.data_oriented
 class Sphere:
-    def __init__(self,center_pos,radius,color,is_light,material):
+    def __init__(self,center_pos,radius,color,material):
         self.center_pos=center_pos
         self.radius=radius
         self.color=color
         self.is_light=False
-        self.is_light=is_light
         self.material=material
     
     @ti.func
@@ -139,8 +137,8 @@ class Sphere:
         a=0.
         b=0.
         c=-self.radius**2
-        j_hat=ti.Vector([0.,0.,0.])
-        hit_pos=ti.Vector([0.,0.,0.])
+        j_hat=ZERO
+        hit_pos=ZERO
         for i in range(3):
             a+=ray_dir[i]**2
             b+=2*ray_dir[i]*M[i]
@@ -184,11 +182,6 @@ class Sphere:
     def hit_cos(self,ray_dir,j_hat):#获取视线的颜色
         cos=ti.math.dot(ray_dir,j_hat)/(ray_dir.norm())
         return ti.abs(cos)#视角要乘上cos
-    
-    @ti.func
-    def light_cos(self,light_dir,j_hat):#获取视线的颜色
-        cos=ti.math.dot(light_dir,j_hat)/(light_dir.norm())
-        return ti.abs(cos)#视角要乘上cos
 
 @ti.func
 def build_sence():
@@ -206,15 +199,14 @@ def build_sence():
     Hierarchy.append(rect(ti.Vector([canvas_width/2,canvas_height,temp_d2]),DOWN,light_width,2*temp_d2,RIGHT,ti.Vector([0.8, 0.8, 0.8]),False,0))          
     Hierarchy.append(rect(ti.Vector([canvas_width-temp_d1,canvas_height,wall_distance/2]),DOWN,2*temp_d1,wall_distance,RIGHT,ti.Vector([0.8, 0.8, 0.8]),False,0)) 
     Hierarchy.append(rect(ti.Vector([canvas_width/2,canvas_height,wall_distance-temp_d2]),DOWN,light_width,2*temp_d2,RIGHT,ti.Vector([0.8, 0.8, 0.8]),False,0))                  
-
     #ground
     Hierarchy.append(rect(ti.Vector([canvas_width/2,0,wall_distance/2]),UP,canvas_width,wall_distance,RIGHT,ti.Vector([0.8, 0.8, 0.8]),False,0))
     #back wall
     Hierarchy.append(rect(ti.Vector([canvas_width/2,canvas_height/2,wall_distance]),FRONT,canvas_width,canvas_height,RIGHT,ti.Vector([0.8, 0.8, 0.8]),False,1))
     
-    Hierarchy.append(Sphere(ti.Vector([u,u/2,0.8*u]),u/2,ti.Vector([0.6, 0.8, 0.8]),False,1))
-    Hierarchy.append(Sphere(ti.Vector([2*u,0.4*u,u]),0.4*u,ti.Vector([0.8, 0.6, 0.2]),False,0))
-    Hierarchy.append(Sphere(ti.Vector([1.5*u,0.2*u,0.5*u]),0.2*u,ti.Vector([0.4, 0.6, 0.4]),False,2))
+    Hierarchy.append(Sphere(ti.Vector([u,u/2,0.8*u]),u/2,ti.Vector([0.6, 0.8, 0.8]),1))
+    Hierarchy.append(Sphere(ti.Vector([2*u,0.4*u,u]),0.4*u,ti.Vector([0.8, 0.6, 0.2]),0))
+    Hierarchy.append(Sphere(ti.Vector([1.5*u,0.2*u,0.5*u]),0.2*u,ti.Vector([0.4, 0.6, 0.4]),2))
     
     return Hierarchy
     
@@ -223,7 +215,7 @@ def render():
     hierarchy=build_sence()
     for i,j in canvas:  
         for c in range(sample_per_pixel):#多次采样
-            color=ti.Vector([0.,0.,0.])
+            color=ZERO
             hit_times=0
             start_pos=camera_pos
             ray_dir=ti.Vector([i+ti.random(),j+ti.random(),0.])-start_pos
@@ -236,8 +228,9 @@ def render():
                     hit_times+=1
                     t_min=INF
                     index=len(hierarchy)
-                    j_hat=ti.Vector([0.,0.,0.])
-                    hit_pos=ti.Vector([0.,0.,0.])
+                    j_hat=ZERO
+                    hit_pos=ZERO
+                    
                     for k in ti.static(range(len(hierarchy))):#对所有物体求交
                         ans=hierarchy[k].get_hit_info(start_pos,ray_dir)
                         if(ans[0]<t_min):
@@ -256,14 +249,17 @@ def render():
                     if(index!=len(hierarchy)):#击中了
                         for k in ti.static(range(len(hierarchy))):
                             if(k==index):#小技巧来得到击中物体的索引
-                        
-                                if(not hierarchy[k].is_light and not is_block):
-                                    light_cos=hierarchy[k].light_cos(light_dir,j_hat)
-                                    color+=brightness*hierarchy[k].color*light_cos
-                                    color+=hierarchy[k].color*hierarchy[k].hit_cos(ray_dir,j_hat)
+                                if(hit_times==1):
+                                    if(not is_block):
+                                        light_cos=
+                                        color=brightness**hierarchy[k].color*hierarchy[k].hit_cos(ray_dir,j_hat)
+                                    else:
+                                        color=hierarchy[k].color*hierarchy[k].hit_cos(ray_dir,j_hat)
+                                elif(hit_light):
+                                    color=ti.Vector([1.,1.,1.])
                                 else:
-                                    color+=p*hierarchy[k].color*hierarchy[k].hit_cos(ray_dir,j_hat)
-                                
+                                    color*=hierarchy[k].color#*hierarchy[k].hit_cos(ray_dir,j_hat)
+                               
                                 if(hierarchy[k].material==2):#都有
                                     if(ti.random()>proportion):
                                         ray_dir=hierarchy[k].get_diffuse_info(j_hat)
@@ -276,7 +272,7 @@ def render():
                                 else:
                                     ray_dir=hierarchy[k].get_diffuse_info(j_hat)
                     else:
-                        color=ti.Vector([0.,0.,0.])
+                        color=ZERO
                         break#虚空
                     start_pos=hit_pos
             canvas[i,j]+=color/(sample_per_pixel*p_RR)#抗锯齿

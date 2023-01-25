@@ -259,7 +259,7 @@ def render():
                         
                                 if(not hierarchy[k].is_light and not is_block):
                                     light_cos=hierarchy[k].light_cos(light_dir,j_hat)
-                                    color+=brightness*hierarchy[k].color*light_cos
+                                    color+=brightness*hierarchy[k].color*light_cos*0.1
                                     color+=hierarchy[k].color*hierarchy[k].hit_cos(ray_dir,j_hat)
                                 else:
                                     color+=p*hierarchy[k].color*hierarchy[k].hit_cos(ray_dir,j_hat)

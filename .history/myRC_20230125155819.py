@@ -12,7 +12,7 @@ BACK=ti.Vector([0.,0.,1.])
 EPS=0.1
 fov=np.pi/3
 u=200#一个单位所对应的像素值
-camera_distance=5.1*u#相机距离
+camera_distance=5*u#相机距离
 canvas_ratio=1#高宽比
 canvas_height=round(camera_distance*np.tan(fov/2))
 canvas_width=canvas_height*canvas_ratio
@@ -20,12 +20,11 @@ camera_pos=ti.Vector([canvas_width/2,canvas_height/2,-camera_distance],ti.f32)
 canvas=ti.Vector.field(3, dtype=ti.f32, shape=(canvas_width, canvas_height))#三通道的画布
 wall_distance=3*u#后壁的距离
 light_width=u
-max_depth=5
-sample_per_pixel=5
+max_depth=10
+sample_per_pixel=8
 proportion=0.2
 p_RR = 0.8#轮盘赌概率
-p=0.8
-brightness=0.5
+brightness=1.2
 light_pos=ti.Vector([canvas_width/2,canvas_height+1,wall_distance/2])
 
 
@@ -198,7 +197,7 @@ def build_sence():
     #light cource
     Hierarchy.append(rect(light_pos,DOWN,light_width,light_width,RIGHT,ti.Vector([10.0, 10.0, 10.0]),True,0))
     #left wall
-    Hierarchy.append(rect(ti.Vector([0.,canvas_height/2,wall_distance/2]),RIGHT,wall_distance,canvas_height,FRONT,ti.Vector([0.0, 0.6, 0.0]),False,0))
+    Hierarchy.append(rect(ti.Vector([0.,canvas_height/2,wall_distance/2]),RIGHT,wall_distance,canvas_height,FRONT,ti.Vector([0.0, 0.6, 0.0]),False,1))
     #right wall,
     Hierarchy.append(rect(ti.Vector([canvas_width,canvas_height/2,wall_distance/2]),LEFT,wall_distance,canvas_height,FRONT,ti.Vector([0.6, 0.0, 0.0]),False,0))          
     #ceil
@@ -206,9 +205,8 @@ def build_sence():
     Hierarchy.append(rect(ti.Vector([canvas_width/2,canvas_height,temp_d2]),DOWN,light_width,2*temp_d2,RIGHT,ti.Vector([0.8, 0.8, 0.8]),False,0))          
     Hierarchy.append(rect(ti.Vector([canvas_width-temp_d1,canvas_height,wall_distance/2]),DOWN,2*temp_d1,wall_distance,RIGHT,ti.Vector([0.8, 0.8, 0.8]),False,0)) 
     Hierarchy.append(rect(ti.Vector([canvas_width/2,canvas_height,wall_distance-temp_d2]),DOWN,light_width,2*temp_d2,RIGHT,ti.Vector([0.8, 0.8, 0.8]),False,0))                  
-
     #ground
-    Hierarchy.append(rect(ti.Vector([canvas_width/2,0,wall_distance/2]),UP,canvas_width,wall_distance,RIGHT,ti.Vector([0.8, 0.8, 0.8]),False,0))
+    Hierarchy.append(rect(ti.Vector([canvas_width/2,0,wall_distance/2]),UP,canvas_width,wall_distance,RIGHT,ti.Vector([0.8, 0.8, 0.8]),False,1))
     #back wall
     Hierarchy.append(rect(ti.Vector([canvas_width/2,canvas_height/2,wall_distance]),FRONT,canvas_width,canvas_height,RIGHT,ti.Vector([0.8, 0.8, 0.8]),False,1))
     
@@ -262,7 +260,7 @@ def render():
                                     color+=brightness*hierarchy[k].color*light_cos
                                     color+=hierarchy[k].color*hierarchy[k].hit_cos(ray_dir,j_hat)
                                 else:
-                                    color+=p*hierarchy[k].color*hierarchy[k].hit_cos(ray_dir,j_hat)
+                                    color+=hierarchy[k].color*hierarchy[k].hit_cos(ray_dir,j_hat)
                                 
                                 if(hierarchy[k].material==2):#都有
                                     if(ti.random()>proportion):

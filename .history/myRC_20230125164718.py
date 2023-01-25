@@ -25,7 +25,7 @@ sample_per_pixel=5
 proportion=0.2
 p_RR = 0.8#轮盘赌概率
 p=0.8
-brightness=0.5
+brightness=1.2
 light_pos=ti.Vector([canvas_width/2,canvas_height+1,wall_distance/2])
 
 
@@ -259,7 +259,7 @@ def render():
                         
                                 if(not hierarchy[k].is_light and not is_block):
                                     light_cos=hierarchy[k].light_cos(light_dir,j_hat)
-                                    color+=brightness*hierarchy[k].color*light_cos
+                                    color+=brightness*hierarchy[k].color*light_cos*0.1
                                     color+=hierarchy[k].color*hierarchy[k].hit_cos(ray_dir,j_hat)
                                 else:
                                     color+=p*hierarchy[k].color*hierarchy[k].hit_cos(ray_dir,j_hat)

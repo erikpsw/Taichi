@@ -12,7 +12,7 @@ BACK=ti.Vector([0.,0.,1.])
 EPS=0.1
 fov=np.pi/3
 u=200#一个单位所对应的像素值
-camera_distance=5.1*u#相机距离
+camera_distance=5*u#相机距离
 canvas_ratio=1#高宽比
 canvas_height=round(camera_distance*np.tan(fov/2))
 canvas_width=canvas_height*canvas_ratio
@@ -20,12 +20,12 @@ camera_pos=ti.Vector([canvas_width/2,canvas_height/2,-camera_distance],ti.f32)
 canvas=ti.Vector.field(3, dtype=ti.f32, shape=(canvas_width, canvas_height))#三通道的画布
 wall_distance=3*u#后壁的距离
 light_width=u
-max_depth=5
-sample_per_pixel=5
+max_depth=2
+sample_per_pixel=1
 proportion=0.2
 p_RR = 0.8#轮盘赌概率
 p=0.8
-brightness=0.5
+brightness=1.2
 light_pos=ti.Vector([canvas_width/2,canvas_height+1,wall_distance/2])
 
 
