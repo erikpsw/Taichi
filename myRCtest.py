@@ -70,7 +70,7 @@ class rect:
         self.color=color
     
     @ti.func
-    def get_t(self,start_pos,ray_dir):
+    def get_hit_info(self,start_pos,ray_dir):
         temp=plane_hit_point(start_pos,ray_dir,self.rect_pos,self.rect_normal)
         t=INF
         point_pos=ti.Vector([0.,0.,0.])
