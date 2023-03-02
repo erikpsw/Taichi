@@ -2,11 +2,10 @@ import taichi as ti
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-dt=0.01
-width=1200
-rotvec = np.array([0., 0.3, 0.])*dt # a single rotation vector
+rotvec = np.array([0., 0.3, 0.])*0.01 # a single rotation vector
 rotation = Rotation.from_rotvec(rotvec) # create a rotation object
 ti.init(arch=ti.cuda)
+
 N = 10
 
 vertices=ti.Vector.field(3,dtype=ti.f32,shape=8)
@@ -37,9 +36,8 @@ vertices.from_numpy(
 )
 
 
-window = ti.ui.Window("Rotation", (width, width))
+window = ti.ui.Window("Test for Drawing 3d-lines", (768, 768))
 canvas = window.get_canvas()
-window.get_gui()
 scene = ti.ui.Scene()
 camera = ti.ui.Camera()
 camera.position(2, 2, 2)
@@ -47,7 +45,6 @@ camera.lookat(-1,-1,-1)
 
 
 while window.running:
-    
     camera.track_user_inputs(window, movement_speed=0.01, hold_key=ti.ui.RMB)
     vertices.from_numpy(rotation.apply(vertices.to_numpy()))
     scene.set_camera(camera)

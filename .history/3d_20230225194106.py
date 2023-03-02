@@ -1,12 +1,8 @@
 import taichi as ti
 import numpy as np
-from scipy.spatial.transform import Rotation
 
-dt=0.01
-width=1200
-rotvec = np.array([0., 0.3, 0.])*dt # a single rotation vector
-rotation = Rotation.from_rotvec(rotvec) # create a rotation object
 ti.init(arch=ti.cuda)
+
 N = 10
 
 vertices=ti.Vector.field(3,dtype=ti.f32,shape=8)
@@ -24,35 +20,31 @@ indices.from_numpy(np.array( [[0, 1, 2],  # 前面
     [1, 0, 4],  # 底面
     [1, 4, 5]]).reshape(-1))
 vertices.from_numpy(
-    np.array([
-    [-0.5, -0.5, 0.5],   # 0
-    [0.5, -0.5, 0.5],    # 1
-    [0.5, 0.5, 0.5],     # 2
-    [-0.5, 0.5, 0.5],    # 3
-    [-0.5, -0.5, -0.5],  # 4
-    [0.5, -0.5, -0.5],   # 5
-    [0.5, 0.5, -0.5],    # 6
-    [-0.5, 0.5, -0.5]    # 7
-])
+    np.reshape(np.array(
+        [-0.5, -0.5, -0.5, # 0
+            0.5, -0.5, -0.5, # 1
+            0.5, 0.5, -0.5, # 2
+            -0.5, 0.5, -0.5, # 3
+            -0.5, -0.5, 0.5, # 4
+            0.5, -0.5, 0.5, # 5
+            0.5, 0.5, 0.5,#6 
+            -0.5,-0.5,-0.5]
+    ),(8,-1))
 )
 
 
-window = ti.ui.Window("Rotation", (width, width))
+window = ti.ui.Window("Test for Drawing 3d-lines", (768, 768))
 canvas = window.get_canvas()
-window.get_gui()
 scene = ti.ui.Scene()
 camera = ti.ui.Camera()
-camera.position(2, 2, 2)
-camera.lookat(-1,-1,-1)
+camera.position(4, 2, 2)
 
 
 while window.running:
-    
-    camera.track_user_inputs(window, movement_speed=0.01, hold_key=ti.ui.RMB)
-    vertices.from_numpy(rotation.apply(vertices.to_numpy()))
+    camera.track_user_inputs(window, movement_speed=0.03, hold_key=ti.ui.RMB)
     scene.set_camera(camera)
     scene.ambient_light((0.8, 0.8, 0.8))
-    scene.point_light(pos=(0.5, 1.5, 1.5), color=(0.5, 0.5, 0.5))
+    scene.point_light(pos=(0.5, 1.5, 1.5), color=(1, 1, 1))
 
     scene.mesh(vertices, indices, color = (0.28, 0.68, 0.99))
     # Draw 3d-lines in the scene

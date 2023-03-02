@@ -3,7 +3,6 @@ import numpy as np
 from scipy.spatial.transform import Rotation
 
 dt=0.01
-width=1200
 rotvec = np.array([0., 0.3, 0.])*dt # a single rotation vector
 rotation = Rotation.from_rotvec(rotvec) # create a rotation object
 ti.init(arch=ti.cuda)
@@ -37,7 +36,7 @@ vertices.from_numpy(
 )
 
 
-window = ti.ui.Window("Rotation", (width, width))
+window = ti.ui.Window("Rotation", (768, 768))
 canvas = window.get_canvas()
 window.get_gui()
 scene = ti.ui.Scene()
