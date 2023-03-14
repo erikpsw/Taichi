@@ -39,7 +39,6 @@ vertices.from_numpy(
 
 window = ti.ui.Window("Rotation", (width, width))
 canvas = window.get_canvas()
-window.get_gui()
 scene = ti.ui.Scene()
 camera = ti.ui.Camera()
 camera.position(2, 2, 2)
