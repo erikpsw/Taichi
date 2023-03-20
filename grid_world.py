@@ -9,7 +9,7 @@ width=pixel_size*grid_width
 height=pixel_size*grid_height
 step=1/grid_width
 gamma=0.9
-punishment=-5
+punishment=-10
 epochs=10
 
 #网格图类
@@ -151,8 +151,8 @@ for i in range(grid_width):
             grid_world.set_color(i,j,[120/255,152/255,232/255])
         elif(state_list[i][j].kind==2):
             grid_world.set_color(i,j,[245/255,151/255,148/255])
-agent_x=3
-agent_y=3
+agent_x=0
+agent_y=0
 myagent=agent(agent_x,agent_y)
 
 

@@ -12,8 +12,8 @@ alpha=0.5
 num_columns = 256
 column_width = window_width // num_columns
 hmax=0.8
-H=np.array([np.abs(np.sin(3*i/num_columns))/2 for i in range(num_columns)])
-Hold=np.array([np.abs(np.sin(3*i/num_columns))/2 for i in range(num_columns)])
+H=np.array([np.sin(5*i/num_columns) for i in range(num_columns)])
+Hold=np.array([np.sin(5*i/num_columns) for i in range(num_columns)])
 Hnew=np.zeros(num_columns)
 
 # 创建窗口并运行 Taichi 程序

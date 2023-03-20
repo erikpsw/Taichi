@@ -6,14 +6,14 @@ ti.init(ti.cuda)
 window_width = 600
 window_height = 600
 beta=0.987#阻尼
-alpha=0.5
+alpha=0.7
 
 # 列数和列宽
 num_columns = 256
 column_width = window_width // num_columns
 hmax=0.8
-H=np.array([np.abs(np.sin(3*i/num_columns))/2 for i in range(num_columns)])
-Hold=np.array([np.abs(np.sin(3*i/num_columns))/2 for i in range(num_columns)])
+H=np.array([0.8*i/num_columns for i in range(num_columns)])
+Hold=np.array([0.8*i/num_columns for i in range(num_columns)])
 Hnew=np.zeros(num_columns)
 
 # 创建窗口并运行 Taichi 程序
