@@ -154,11 +154,11 @@ class Sphere:
                 t=max(t1,t2)
         if(t!=INF):
             hit_pos=start_pos+t*ray_dir
-            j_hat=(hit_pos-self.center_pos).normalized()#连接球心得到方向
+            j_hat=(hit_pos-self.center_pos).normalized()#连接球心
         return t,hit_pos,j_hat
 
     @ti.func
-    def get_diffuse_info(self,j_hat):#散射光线
+    def get_diffuse_info(self,j_hat):
         i_hat=ti.Vector([-2*j_hat[1]*j_hat[2],j_hat[0]*j_hat[2],j_hat[1]*j_hat[0]]).normalized()
         k_hat=ti.math.cross(i_hat,j_hat).normalized()
         theta=ti.math.acos(2*ti.random(ti.f32)-1)
@@ -169,7 +169,7 @@ class Sphere:
         return(x*i_hat+y*k_hat+z*j_hat)
     
     @ti.func
-    def get_reflect_info(self,j_hat,ray_dir):#反射
+    def get_reflect_info(self,j_hat,ray_dir):
         i_hat=ti.Vector([-2*j_hat[1]*j_hat[2],j_hat[0]*j_hat[2],j_hat[1]*j_hat[0]]).normalized()
         k_hat=ti.math.cross(i_hat,j_hat).normalized()
         A=ti.Matrix.zero(ti.f32,3,3)
@@ -246,12 +246,11 @@ def render():
                             hit_pos=ans[1]
                             index=k
                             hit_light=hierarchy[k].is_light
-                            
-                    light_dir=light_pos-hit_pos 
-                    is_block=False #人为用几何方法构造阴影
+                    light_dir=light_pos-hit_pos #阴影
+                    is_block=False
                     for k in ti.static(range(1,len(hierarchy))):#对所有物体求交
                         ans=hierarchy[k].get_hit_info(hit_pos,light_dir)
-                        if(ans[0]<INF):
+                        if(ans[0]<INF ):
                             is_block=True
  
                     if(index!=len(hierarchy)):#击中了

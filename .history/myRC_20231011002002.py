@@ -246,9 +246,8 @@ def render():
                             hit_pos=ans[1]
                             index=k
                             hit_light=hierarchy[k].is_light
-                            
-                    light_dir=light_pos-hit_pos 
-                    is_block=False #人为用几何方法构造阴影
+                    light_dir=light_pos-hit_pos #阴影
+                    is_block=False
                     for k in ti.static(range(1,len(hierarchy))):#对所有物体求交
                         ans=hierarchy[k].get_hit_info(hit_pos,light_dir)
                         if(ans[0]<INF):
@@ -258,7 +257,7 @@ def render():
                         for k in ti.static(range(len(hierarchy))):
                             if(k==index):#小技巧来得到击中物体的索引
                         
-                                if(not hierarchy[k].is_light and not is_block):
+                                if(not hierarchy[k].is_light):
                                     light_cos=hierarchy[k].light_cos(light_dir,j_hat)
                                     color+=brightness*hierarchy[k].color*light_cos
                                     color+=hierarchy[k].color*hierarchy[k].hit_cos(ray_dir,j_hat)
