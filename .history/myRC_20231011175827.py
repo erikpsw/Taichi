@@ -25,6 +25,7 @@ sample_per_pixel=5
 proportion=0.2
 p_RR = 0.8#轮盘赌概率
 p=0.8
+brightness=0.5
 light_pos=ti.Vector([canvas_width/2,canvas_height+1,wall_distance/2])
 
 
@@ -229,7 +230,7 @@ def render():
             ray_dir=ti.Vector([i+ti.random(),j+ti.random(),0.])-start_pos
             hit_light=False
             # cos=1.
-            light_factor=0.9
+            light_factor=0.8
             while(hit_times<=max_depth and not hit_light):
                 
                 if(ti.random()>p_RR):
@@ -248,25 +249,22 @@ def render():
                             hit_pos=ans[1]
                             index=k
                             hit_light=hierarchy[k].is_light
-                    is_block=False
+                            
                     light_dir=light_pos-hit_pos 
-                    for k in ti.static(range(1,len(hierarchy))):#对所有物体求交(跳过灯光)
-                        ans=hierarchy[k].get_hit_info(hit_pos,light_dir)
-                        if(ans[0]<INF):
-                            is_block=True
+ 
                     if(index!=len(hierarchy)):#击中了
                         for k in ti.static(range(len(hierarchy))):
                             if(k==index):#小技巧来得到击中物体的索引
                                 
-                                if(not hierarchy[k].is_light and not is_block):
+                                if(not hierarchy[k].is_light):
                                     light_factor+=-(light_factor-light_factor**2)
                                     light_cos=hierarchy[k].light_cos(light_dir,j_hat)
-                                    color+=hierarchy[k].color*hierarchy[k].hit_cos(ray_dir,j_hat)*light_cos*light_factor
+                                    color+=brightness*hierarchy[k].color*light_cos
+                                    color+=hierarchy[k].color*hierarchy[k].hit_cos(ray_dir,j_hat)
                                 elif(hierarchy[k].is_light):
                                     # light_factor=1
                                     color+=hierarchy[k].color*hierarchy[k].hit_cos(ray_dir,j_hat)
-                                else:
-                                    color+=hierarchy[k].color*light_factor*0.5*hierarchy[k].hit_cos(ray_dir,j_hat)
+
                                 if(hierarchy[k].material==2):#都有
                                     if(ti.random()>proportion):
                                         ray_dir=hierarchy[k].get_diffuse_info(j_hat)
