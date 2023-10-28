@@ -25,7 +25,7 @@ sample_per_pixel=5
 proportion=0.2
 p_RR = 0.6#轮盘赌概率
 p=0.8
-light_pos=ti.Vector([canvas_width/2,canvas_height+0.5,wall_distance/2])
+light_pos=ti.Vector([canvas_width/2,canvas_height+10,wall_distance/2])
 
 
 @ti.func
@@ -263,7 +263,7 @@ def render():
                                     color+=hierarchy[k].color*hierarchy[k].hit_cos(ray_dir,j_hat)*light_factor**(hit_times-1)
                                 elif(hierarchy[k].is_light):
                                     # light_factor=1
-                                    color+=hierarchy[k].color
+                                    color+=hierarchy[k].color*hierarchy[k].hit_cos(ray_dir,j_hat)
                                 else:
                                     color+=hierarchy[k].color*light_factor*0.5*hierarchy[k].hit_cos(ray_dir,j_hat)
                                 if(hierarchy[k].material==2):#都有

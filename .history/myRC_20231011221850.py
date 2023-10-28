@@ -23,9 +23,9 @@ light_width=u
 max_depth=5
 sample_per_pixel=5
 proportion=0.2
-p_RR = 0.6#轮盘赌概率
+p_RR = 0.8#轮盘赌概率
 p=0.8
-light_pos=ti.Vector([canvas_width/2,canvas_height+0.5,wall_distance/2])
+light_pos=ti.Vector([canvas_width/2,canvas_height+1,wall_distance/2])
 
 
 @ti.func
@@ -195,7 +195,7 @@ def build_sence():
     temp_d1=(canvas_width-light_width)/4
     temp_d2=(wall_distance-light_width)/4
     #light cource
-    Hierarchy.append(rect(light_pos,DOWN,light_width,light_width,RIGHT,ti.Vector([1., 1., 1.]),True,0))
+    Hierarchy.append(rect(light_pos,DOWN,light_width,light_width,RIGHT,ti.Vector([10.0, 10.0, 10.0]),True,0))
     #left wall
     Hierarchy.append(rect(ti.Vector([0.,canvas_height/2,wall_distance/2]),RIGHT,wall_distance,canvas_height,FRONT,ti.Vector([0.0, 0.6, 0.0]),False,0))
     #right wall,
@@ -207,9 +207,9 @@ def build_sence():
     Hierarchy.append(rect(ti.Vector([canvas_width/2,canvas_height,wall_distance-temp_d2]),DOWN,light_width,2*temp_d2,RIGHT,ti.Vector([0.8, 0.8, 0.8]),False,0))                  
 
     #ground
-    Hierarchy.append(rect(ti.Vector([canvas_width/2,0,wall_distance/2]),UP,canvas_width,wall_distance,RIGHT,ti.Vector([0.8, 0.8, 0.8]),False,0))
+    Hierarchy.append(rect(ti.Vector([canvas_width/2,0,wall_distance/2]),UP,canvas_width,wall_distance,RIGHT,ti.Vector([1., 1., 1.]),False,0))
     #back wall
-    Hierarchy.append(rect(ti.Vector([canvas_width/2,canvas_height/2,wall_distance]),FRONT,canvas_width,canvas_height,RIGHT,ti.Vector([0.8, 0.8, 0.8]),False,0))
+    Hierarchy.append(rect(ti.Vector([canvas_width/2,canvas_height/2,wall_distance]),FRONT,canvas_width,canvas_height,RIGHT,ti.Vector([0.8, 0.8, 0.8]),False,1))
     
     Hierarchy.append(Sphere(ti.Vector([u,u/2,0.8*u]),u/2,ti.Vector([0.6, 0.8, 0.8]),False,1))
     Hierarchy.append(Sphere(ti.Vector([2*u,0.4*u,u]),0.4*u,ti.Vector([0.8, 0.6, 0.2]),False,0))
@@ -259,11 +259,12 @@ def render():
                             if(k==index):#小技巧来得到击中物体的索引
                                 
                                 if(not hierarchy[k].is_light and not is_block):
+                                    light_factor+=-(light_factor-light_factor**2)
                                     light_cos=hierarchy[k].light_cos(light_dir,j_hat)
-                                    color+=hierarchy[k].color*hierarchy[k].hit_cos(ray_dir,j_hat)*light_factor**(hit_times-1)
+                                    color+=hierarchy[k].color*hierarchy[k].hit_cos(ray_dir,j_hat)*light_cos*light_factor
                                 elif(hierarchy[k].is_light):
                                     # light_factor=1
-                                    color+=hierarchy[k].color
+                                    color+=hierarchy[k].color*hierarchy[k].hit_cos(ray_dir,j_hat)
                                 else:
                                     color+=hierarchy[k].color*light_factor*0.5*hierarchy[k].hit_cos(ray_dir,j_hat)
                                 if(hierarchy[k].material==2):#都有
@@ -278,7 +279,7 @@ def render():
                                 else:
                                     ray_dir=hierarchy[k].get_diffuse_info(j_hat)
                     else:
-                        # color=ti.Vector([0.,0.,0.])
+                        color=ti.Vector([0.,0.,0.])
                         break#虚空
                     start_pos=hit_pos
             if(not hit_light):

@@ -25,7 +25,7 @@ sample_per_pixel=5
 proportion=0.2
 p_RR = 0.6#轮盘赌概率
 p=0.8
-light_pos=ti.Vector([canvas_width/2,canvas_height+0.5,wall_distance/2])
+light_pos=ti.Vector([canvas_width/2,canvas_height-0.5,wall_distance/2])
 
 
 @ti.func

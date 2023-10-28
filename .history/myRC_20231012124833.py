@@ -25,7 +25,7 @@ sample_per_pixel=5
 proportion=0.2
 p_RR = 0.6#轮盘赌概率
 p=0.8
-light_pos=ti.Vector([canvas_width/2,canvas_height+0.5,wall_distance/2])
+light_pos=ti.Vector([canvas_width/2,canvas_height+1,wall_distance/2])
 
 
 @ti.func
@@ -195,7 +195,7 @@ def build_sence():
     temp_d1=(canvas_width-light_width)/4
     temp_d2=(wall_distance-light_width)/4
     #light cource
-    Hierarchy.append(rect(light_pos,DOWN,light_width,light_width,RIGHT,ti.Vector([1., 1., 1.]),True,0))
+    Hierarchy.append(rect(light_pos,DOWN,light_width,light_width,RIGHT,ti.Vector([10.0, 10.0, 10.0]),True,0))
     #left wall
     Hierarchy.append(rect(ti.Vector([0.,canvas_height/2,wall_distance/2]),RIGHT,wall_distance,canvas_height,FRONT,ti.Vector([0.0, 0.6, 0.0]),False,0))
     #right wall,
@@ -263,7 +263,7 @@ def render():
                                     color+=hierarchy[k].color*hierarchy[k].hit_cos(ray_dir,j_hat)*light_factor**(hit_times-1)
                                 elif(hierarchy[k].is_light):
                                     # light_factor=1
-                                    color+=hierarchy[k].color
+                                    color+=hierarchy[k].color*hierarchy[k].hit_cos(ray_dir,j_hat)
                                 else:
                                     color+=hierarchy[k].color*light_factor*0.5*hierarchy[k].hit_cos(ray_dir,j_hat)
                                 if(hierarchy[k].material==2):#都有
