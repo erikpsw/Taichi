@@ -1,7 +1,7 @@
 import numpy as np
 import taichi as ti
 import queue
-ti.init(arch=ti.cpu)
+ti.init(arch=ti.gpu)
 g=9.8
 
 class double_p:

@@ -127,9 +127,11 @@ def paint_color():
     phi_ = phi.to_numpy()
     f2v_ = f2v.to_numpy()
     a, b, c = pos_[f2v_[:, 0]], pos_[f2v_[:, 1]], pos_[f2v_[:, 2]]
-    k = phi_ * (5e4 / E)
-    gb = k * 0.5
-    gui.triangles(a, b, c, color=ti.rgb_to_hex([k + gb, gb, gb]))
+    k = phi_ * (10e5 / E)
+    # print(k)
+    # gb =  k
+    # print(phi)
+    gui.triangles(a, b, c, color=ti.rgb_to_hex([k , 0, 0]))
         
 # init_mesh()
 init_pos()

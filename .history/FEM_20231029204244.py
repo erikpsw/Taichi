@@ -13,7 +13,7 @@ dx=1/N
 rho = 4e1
 NF = 2 * N**2  # 面数
 NV = (N + 1) ** 2  # 顶点数
-E, nu = 4e3, 0.2  # Young's modulus and Poisson's ratio
+E, nu = 4e4, 0.2  # Young's modulus and Poisson's ratio
 mu, lam = E / 2 / (1 + nu), E * nu / (1 + nu) / (1 - 2 * nu)  # Lame parameters
 # ball_pos, ball_radius = ti.Vector([0.5, 0.0]), 0.32
 gravity = ti.Vector([0, -g])
@@ -39,7 +39,7 @@ for i in range(N):
     for j in range(N):
         f2v_list.append([i*(N+1)+1+j,(i+1)*(N+1)+j,i*(N+1)+j])
         f2v_list.append([i*(N+1)+1+j,(i+1)*(N+1)+j,(i+1)*(N+1)+1+j])
-f2v.from_numpy(np.array(f2v_list))
+# f2v.from_numpy(np.array(f2v_list))
 def init_mesh():
     for i, j in ti.ndrange(N, N):
         k = (i * N + j) * 2
@@ -122,16 +122,8 @@ def advance():
         pos[i] += dt * vel[i]
         
         
-def paint_color():
-    pos_ = pos.to_numpy()
-    phi_ = phi.to_numpy()
-    f2v_ = f2v.to_numpy()
-    a, b, c = pos_[f2v_[:, 0]], pos_[f2v_[:, 1]], pos_[f2v_[:, 2]]
-    k = phi_ * (5e4 / E)
-    gb = k * 0.5
-    gui.triangles(a, b, c, color=ti.rgb_to_hex([k + gb, gb, gb]))
         
-# init_mesh()
+init_mesh()
 init_pos()
 while gui.running:
     for i in range(30):
@@ -140,7 +132,14 @@ while gui.running:
         # print(pos)
         advance()
     # print(U[None])
-    paint_color()
+    pos_ = pos.to_numpy()
+    phi_ = phi.to_numpy()
+    f2v_ = f2v.to_numpy()
+    a, b, c = pos_[f2v_[:, 0]], pos_[f2v_[:, 1]], pos_[f2v_[:, 2]]
+    k = phi_ * (5e4 / E)
+    # print(k)
+    gb = (1 - k) * 0.5
+    gui.triangles(a, b, c, color=ti.rgb_to_hex([k + gb, gb, gb]))
     gui.circles(pos.to_numpy(),color=0xffffff,radius=4)
     gui.circle(ball_pos, radius=ball_radius * width, color=0x666666)
     gui.triangle([0,ym],[xm,0],[0,0],color=0x666666)
